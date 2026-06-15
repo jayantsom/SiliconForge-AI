@@ -1,0 +1,82 @@
+[
+  {
+    "id": "chunk_001",
+    "title": "FinFET Thermal Budget Constraints in Gate-Last Integration",
+    "abstract": "Gate-last FinFET integration requires careful thermal management post high-k dielectric deposition. This work establishes that the thermal budget ceiling of 500°C must be strictly enforced after HfO2 deposition to prevent crystallization of the amorphous dielectric layer. Anneal steps above this threshold induce grain boundary formation leading to increased gate leakage current. Process sequences using titanium nitride metal gates remain thermally stable below 480°C for 30-second rapid thermal anneals.",
+    "domain": "transistor_integration",
+    "year": 2023,
+    "keywords": ["FinFET", "thermal budget", "gate-last", "HfO2", "metal gate"]
+  },
+  {
+    "id": "chunk_002",
+    "title": "Gate-All-Around Nanosheet Threshold Voltage Engineering via Work Function Metal Stacks",
+    "abstract": "Gate-all-around (GAA) nanosheet transistors require work function metal (WFM) engineering for multi-Vt library support. Molybdenum nitride (MoN) and tantalum carbide (TaC) are investigated as WFM candidates. MoN achieves Vt shifts of 150–200 mV per nanometer of thickness while maintaining EOT below 0.6 nm. Sub-2nm channel width nanosheets show quantum confinement Vt increases of approximately 80 mV per 1 nm width reduction. Thermal stability up to 450°C is demonstrated.",
+    "domain": "transistor_integration",
+    "year": 2024,
+    "keywords": ["GAA", "nanosheet", "threshold voltage", "work function metal", "multi-Vt"]
+  },
+  {
+    "id": "chunk_003",
+    "title": "ALD Window Optimization for HfO2 High-k Dielectrics Using Tetrakis(dimethylamido)hafnium",
+    "abstract": "Atomic layer deposition (ALD) of HfO2 using TDMAH precursor and water as co-reactant exhibits a process window of 150–350°C. Below 150°C, incomplete surface reactions result in carbon contamination exceeding 5 at.%. Above 350°C, precursor decomposition causes CVD-like non-uniformity across 300mm wafers. Growth rate within the ALD window is 1.0 Å/cycle ±0.05 Å measured by spectroscopic ellipsometry. Interface trap density Dit is minimized at 200–250°C deposition temperature.",
+    "domain": "dielectric_deposition",
+    "year": 2022,
+    "keywords": ["ALD", "HfO2", "TDMAH", "ALD window", "high-k"]
+  },
+  {
+    "id": "chunk_004",
+    "title": "Interfacial SiO2 Layer Control in HfO2/Si Gate Stack Formation",
+    "abstract": "The interfacial layer (IL) between HfO2 and silicon substrate critically impacts device performance. Chemical oxide grown by UV-ozone treatment achieves IL thickness of 0.8–1.2 nm with interface state density below 5×10^10 cm^-2 eV^-1. Comparative study of thermal oxide, chemical oxide, and nitridation treatments shows that NH3 anneal at 700°C before HfO2 deposition reduces IL regrowth during subsequent processing. Total equivalent oxide thickness (EOT) scaling to 0.5 nm is demonstrated with gate-last integration.",
+    "domain": "dielectric_deposition",
+    "year": 2023,
+    "keywords": ["interfacial layer", "SiO2", "HfO2", "EOT", "gate stack", "ALD"]
+  },
+  {
+    "id": "chunk_005",
+    "title": "High-Selectivity Plasma Etching of SiN over SiO2 for FinFET Spacer Formation",
+    "abstract": "Selective etching of silicon nitride (SiN) spacers over silicon oxide liner requires selectivity ratios exceeding 10:1 for viable FinFET spacer processing. Fluorocarbon-based plasma chemistry (CF4/CHF3/Ar) achieves SiN:SiO2 selectivity of 12:1 at 30 mTorr chamber pressure and 400W source power. Aspect ratio dependent etching (ARDE) results in 8% etch rate lag for 10:1 aspect ratio features. Endpoint detection via optical emission spectroscopy at 703 nm CN* emission provides process control with ±2% repeatability.",
+    "domain": "plasma_etch",
+    "year": 2023,
+    "keywords": ["plasma etch", "SiN", "selectivity", "FinFET spacer", "ARDE", "fluorocarbon"]
+  },
+  {
+    "id": "chunk_006",
+    "title": "Aspect Ratio Dependent Etching in High Aspect Ratio Contact Formation",
+    "abstract": "High aspect ratio contacts (HARC) in advanced logic nodes exhibit pronounced aspect ratio dependent etching (ARDE) effects. For contact aspect ratios above 20:1, etch rates decrease by 25–40% compared to open field areas when using C4F8/O2/Ar plasma chemistry. Ion shadowing and neutral depletion mechanisms are modeled using a Monte Carlo simulation approach. Process optimization with bottom anti-reflective coating (BARC) and optimized C4F8:O2 ratio of 4:1 reduces ARDE lag to below 10% for 25:1 aspect ratio contacts.",
+    "domain": "plasma_etch",
+    "year": 2024,
+    "keywords": ["HARC", "ARDE", "high aspect ratio", "contact etch", "C4F8", "ion shadowing"]
+  },
+  {
+    "id": "chunk_007",
+    "title": "Dishing and Erosion Control in Copper CMP for Advanced Interconnect Nodes",
+    "abstract": "Copper chemical mechanical planarization (CMP) at advanced technology nodes faces dishing and erosion challenges that impact resistance variation and reliability. Slurry formulation with 3% H2O2 oxidizer, alumina abrasive at pH 4.0, and 0.5% benzotriazole (BTA) inhibitor achieves copper dishing below 10 nm for 10 µm wide lines. Pattern density effects on erosion are characterized across 16–84% density range. Addition of 50 ppm poly-acrylic acid as barrier layer corrosion inhibitor reduces cobalt liner recessing to below 2 nm.",
+    "domain": "cmp_planarization",
+    "year": 2023,
+    "keywords": ["CMP", "copper", "dishing", "erosion", "slurry", "BTA", "interconnect"]
+  },
+  {
+    "id": "chunk_008",
+    "title": "Tungsten CMP Endpoint Detection and Slurry Chemistry Optimization",
+    "abstract": "Tungsten CMP for local interconnect and contact fill requires precise endpoint detection to prevent over-polishing of titanium nitride barrier layers. Motor current endpoint detection combined with optical reflectometry achieves layer removal uniformity of ±3% (1σ) across 300mm wafers. Slurry chemistry investigation of iron nitrate concentration (0.01–0.1 M) shows optimal material removal rate at 0.05 M with selectivity of 60:1 tungsten over oxide. Post-CMP cleaning with SC1 solution removes particles to below 0.05/cm² for defects above 65 nm.",
+    "domain": "cmp_planarization",
+    "year": 2022,
+    "keywords": ["tungsten CMP", "endpoint", "slurry", "TiN barrier", "uniformity"]
+  },
+  {
+    "id": "chunk_009",
+    "title": "CD-SEM Measurement Uncertainty in Sub-5nm Node Gate Length Metrology",
+    "abstract": "Critical dimension scanning electron microscopy (CD-SEM) for gate length metrology at sub-5nm nodes faces fundamental measurement uncertainty challenges. Monte Carlo electron-solid interaction simulations reveal edge detection algorithms introduce systematic bias of 0.3–0.8 nm for line widths below 10 nm. Machine learning-based peak finding with convolutional neural network training on 10,000+ labeled SEM images reduces measurement uncertainty to ±0.15 nm (3σ). CD-SEM beam energy optimization at 800 eV minimizes charging artifacts on high-aspect ratio FinFET gate structures.",
+    "domain": "metrology",
+    "year": 2024,
+    "keywords": ["CD-SEM", "gate length", "metrology", "measurement uncertainty", "FinFET", "sub-5nm"]
+  },
+  {
+    "id": "chunk_010",
+    "title": "Overlay Error Reduction in EUV Lithography Using Machine Learning Correction Models",
+    "abstract": "Overlay error in extreme ultraviolet (EUV) lithography at 3nm node requires reduction below 1.5 nm (3σ) for yield-critical layer pairs. A hybrid feed-forward and feedback control system using wafer-level overlay measurements from 1000+ target sites per layer achieves run-to-run overlay control. Machine learning model combining scanner fingerprint, reticle contribution, and wafer deformation map predicts overlay residuals with 0.3 nm root mean squared error. Ellipsometric measurement of film stress contribution to pattern placement error enables correction before exposure.",
+    "domain": "metrology",
+    "year": 2024,
+    "keywords": ["overlay", "EUV", "lithography", "machine learning", "3nm node", "pattern placement"]
+  }
+]
