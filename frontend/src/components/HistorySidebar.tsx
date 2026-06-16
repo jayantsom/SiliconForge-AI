@@ -22,9 +22,14 @@ export function HistorySidebar({ onSelectSession, activeSessionId }: HistorySide
   const [loading, setLoading] = useState(true)
 
   const fetchHistory = async () => {
-    const data = await getHistory()
-    setHistory(data)
-    setLoading(false)
+    try {
+      const data = await getHistory()
+      setHistory(data)
+    } catch {
+      // Network error — silently keep existing history list
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {

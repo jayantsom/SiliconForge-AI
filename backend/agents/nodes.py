@@ -13,11 +13,7 @@ from backend.tools.search import fetch_arxiv_papers
 
 logger = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
-# Module-level LLM singleton — constructed once, reused across all node calls.
-# ChatOllama is thread-safe and re-entrant; creating a new instance per call
-# was causing repeated HTTP handshake overhead against the Ollama server.
-# ---------------------------------------------------------------------------
+# LLM singleton — constructed once to avoid repeated HTTP handshake overhead per node call.
 _llm_instance: ChatOllama | None = None
 
 
@@ -51,7 +47,7 @@ async def planner_node(state: ResearchState) -> dict[str, Any]:
         f"Focus on technical precision: include material names, process names, and device types."
     )
     try:
-        result: PlannerOutput = llm.invoke(prompt)  # type: ignore[assignment]
+        result: PlannerOutput = await llm.ainvoke(prompt)  # type: ignore[assignment]
         plan = result.search_keywords + result.strategy_steps
         summary = f"Generated {len(result.search_keywords)} keywords and {len(result.strategy_steps)} strategy steps"
     except Exception as exc:
@@ -67,11 +63,13 @@ async def planner_node(state: ResearchState) -> dict[str, Any]:
 async def retrieval_node(state: ResearchState) -> dict[str, Any]:
     """Retrieve literature from ChromaDB and ArXiv, then synthesise a technical summary."""
     keywords = state["plan"][:5]
+    # Guard against an empty plan — fall back to the raw user query
+    if not keywords:
+        keywords = [state["user_query"]]
     chroma_query = " ".join(keywords[:2])
     arxiv_query = " ".join(keywords)
 
     local_results = query_local_literature(chroma_query, limit=3)
-    # fetch_arxiv_papers is now async — must be awaited
     arxiv_results = await fetch_arxiv_papers(arxiv_query)
 
     # Deduplicate by title
@@ -83,7 +81,6 @@ async def retrieval_node(state: ResearchState) -> dict[str, Any]:
             seen.add(title)
             merged.append(item)
 
-    # Build context string for LLM summarisation
     context_parts: list[str] = []
     for i, paper in enumerate(merged[:8], 1):
         context_parts.append(
@@ -99,7 +96,8 @@ async def retrieval_node(state: ResearchState) -> dict[str, Any]:
         f"Include specific temperatures, chemistries, selectivity values, and constraints where available. "
         f"Be precise and cite specific findings."
     )
-    raw_summary: str = _llm().invoke(summary_prompt).content  # type: ignore[union-attr]
+    raw_summary_msg = await _llm().ainvoke(summary_prompt)
+    raw_summary: str = raw_summary_msg.content  # type: ignore[union-attr]
 
     trace = state.get("agent_trace", []) + [
         _trace(
@@ -132,7 +130,7 @@ async def critique_node(state: ResearchState) -> dict[str, Any]:
         f"and failure_reason if verdict is 'fail'."
     )
     try:
-        result: CritiqueResult = llm.invoke(prompt)  # type: ignore[assignment]
+        result: CritiqueResult = await llm.ainvoke(prompt)  # type: ignore[assignment]
         verdict_label = result.verdict
         confidence = result.confidence_score
         failure_info = f" — {result.failure_reason}" if result.failure_reason else ""
@@ -157,11 +155,15 @@ async def critique_node(state: ResearchState) -> dict[str, Any]:
 async def synthesis_node(state: ResearchState) -> dict[str, Any]:
     """Produce the final structured Markdown research report."""
     critique = state["critique_output"]
+
+    literature = state.get("literature_context", [])[:8]
     refs: list[str] = []
-    for i, paper in enumerate(state.get("literature_context", [])[:8], 1):
+    for i, paper in enumerate(literature, 1):
         year = paper.get("year") or "n.d."
-        refs.append(f"{i}. {paper.get('title', 'Unknown')} ({year})")
+        source_tag = "[ArXiv]" if paper.get("arxiv_url") else "[Local]"
+        refs.append(f"{i}. {paper.get('title', 'Unknown')} ({year}) {source_tag}")
     refs_str = "\n".join(refs) if refs else "No references retrieved."
+    ref_count = len(refs)
 
     prompt = (
         f"You are a technical research writer for semiconductor manufacturing.\n"
@@ -177,16 +179,22 @@ async def synthesis_node(state: ResearchState) -> dict[str, Any]:
         f"### Success Metrics\n"
         f"### Risk Factors\n"
         f"## References\n\n"
+        f"STRICT RULES for the ## References section:\n"
+        f"- You MUST list ONLY the {ref_count} references provided below — numbered [1] through [{ref_count}].\n"
+        f"- Do NOT add, invent, or hallucinate any additional references.\n"
+        f"- Do NOT cite papers not in this list.\n"
+        f"- In the body text, cite as [1], [2], etc. matching the list below.\n\n"
         f"Data to use:\n"
         f"- Original query: {state['user_query']}\n"
         f"- Technical summary: {state['raw_summary']}\n"
         f"- Critique verdict: {critique.verdict} (confidence: {critique.confidence_score})\n"
         f"- Validated hypothesis: {critique.hypothesis}\n"
         f"- Physical violations found: {critique.physical_violations}\n"
-        f"- References:\n{refs_str}\n\n"
+        f"- References (use ONLY these):\n{refs_str}\n\n"
         f"Write in precise technical language appropriate for a semiconductor process engineer."
     )
-    final_report: str = _llm().invoke(prompt).content  # type: ignore[union-attr]
+    final_report_msg = await _llm().ainvoke(prompt)
+    final_report: str = final_report_msg.content  # type: ignore[union-attr]
 
     trace = state.get("agent_trace", []) + [
         _trace("synthesis", "Generated final structured Markdown research report")

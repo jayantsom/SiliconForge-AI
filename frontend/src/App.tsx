@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AgentTracePanel } from './components/AgentTracePanel'
 import { HistorySidebar } from './components/HistorySidebar'
 import { QueryInput } from './components/QueryInput'
@@ -12,8 +12,19 @@ export default function App() {
   const [status, setStatus] = useState<RunStatus>('idle')
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  // Keep a ref to the active EventSource so we can close it before starting a new stream
+  const activeSourceRef = useRef<EventSource | null>(null)
+
+  // Close any open stream on unmount
+  useEffect(() => {
+    return () => { activeSourceRef.current?.close() }
+  }, [])
 
   const handleSubmit = (query: string) => {
+    // Close any in-progress stream before starting a new one
+    activeSourceRef.current?.close()
+    activeSourceRef.current = null
+
     const sessionId = crypto.randomUUID()
     setActiveSessionId(sessionId)
     setTraceEvents([])
@@ -21,7 +32,7 @@ export default function App() {
     setErrorMsg(null)
     setStatus('running')
 
-    streamResearch(
+    const source = streamResearch(
       query,
       sessionId,
       (event: StreamEvent) => {
@@ -32,12 +43,15 @@ export default function App() {
       (report: string) => {
         setFinalReport(report)
         setStatus('complete')
+        activeSourceRef.current = null
       },
       (msg: string) => {
         setErrorMsg(msg)
         setStatus('error')
+        activeSourceRef.current = null
       }
     )
+    activeSourceRef.current = source
   }
 
   const handleSelectSession = (session: SessionSummary) => {

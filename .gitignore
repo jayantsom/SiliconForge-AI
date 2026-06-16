@@ -11,6 +11,10 @@
 .env
 .env.local
 .env.*.local
+.env.production
+.env.staging
+.env.test
+*.env
 
 
 # -----------------------------------------------------------------------------
@@ -39,8 +43,10 @@ MANIFEST
 # Pytest
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
-*.xml
+coverage.xml
+junit*.xml
 
 # MyPy / type checkers
 .mypy_cache/
@@ -50,6 +56,10 @@ htmlcov/
 
 # Jupyter
 .ipynb_checkpoints/
+
+# SQLite databases (local dev only; production uses PostgreSQL)
+*.sqlite3
+*.db
 
 
 # -----------------------------------------------------------------------------
@@ -64,9 +74,10 @@ chroma_store/
 node_modules/
 frontend/node_modules/
 
-# Vite build output
+# Vite build output and cache
 frontend/dist/
 frontend/.vite/
+.vite/
 
 # Parcel cache
 .cache/
@@ -77,6 +88,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# TypeScript build info (generated, not source)
+*.tsbuildinfo
+tsconfig.tsbuildinfo
 
 
 # -----------------------------------------------------------------------------
@@ -109,9 +124,9 @@ Desktop.ini
 # -----------------------------------------------------------------------------
 # Docker
 # -----------------------------------------------------------------------------
-# Docker volumes are managed by Docker; no local artifacts to ignore here.
-# Uncomment if you generate compose override files locally:
-# docker-compose.override.yml
+# Local compose overrides (keep the committed docker-compose.yml)
+docker-compose.override.yml
+docker-compose.local.yml
 
 
 # -----------------------------------------------------------------------------

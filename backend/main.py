@@ -9,12 +9,13 @@ from typing import Any, AsyncGenerator
 import httpx
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 from sse_starlette.sse import EventSourceResponse
 
 from backend.agents.graph import compiled_graph
 from backend.agents.state import ResearchState
 from backend.config import settings
-from backend.database import get_history, init_db, save_session, update_session
+from backend.database import engine, get_history, init_db, save_session, update_session
 from backend.schemas import (
     HealthResponse,
     ResearchRequest,
@@ -22,7 +23,7 @@ from backend.schemas import (
     SessionSummary,
     TraceEventSchema,
 )
-from backend.tools.literature import init_literature_store
+from backend.tools.literature import _get_client, init_literature_store
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -30,7 +31,6 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    # Initialize database tables and ChromaDB on startup
     await init_db()
     init_literature_store()
     yield
@@ -102,12 +102,9 @@ async def stream_research(
         await save_session(session_id, query)
         config = {"configurable": {"thread_id": session_id}}
 
-        # astream yields {node_name: state_diff} as each node completes —
-        # much more reliable than parsing on_chain_end events from astream_events.
         accumulated_state: dict[str, Any] = dict(initial_state)
         try:
             async for chunk in compiled_graph.astream(initial_state, config=config):
-                # chunk is {node_name: {state_keys_updated...}}
                 for node_name, node_output in chunk.items():
                     accumulated_state.update(node_output)
                     trace = accumulated_state.get("agent_trace", [])
@@ -164,16 +161,13 @@ async def health_check() -> HealthResponse:
         pass
 
     try:
-        from backend.tools.literature import _get_client
         _get_client().heartbeat()
         chromadb_ok = True
     except Exception:
         pass
 
     try:
-        from backend.database import engine
         async with engine.connect() as conn:
-            from sqlalchemy import text
             await conn.execute(text("SELECT 1"))
         postgres_ok = True
     except Exception:
